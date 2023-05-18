@@ -1,12 +1,14 @@
 using JuMP
+using Gurobi
+using CPLEX
 using GLPK
 include("vrp.jl")
 
-n = 50
+n = 300
 P = rand(-1000:1000, n, 2)
 C = createSymmetricalCostMatrix(P[:, 1], P[:, 2])
 model = createTSPModel(C)
-set_optimizer(model, Gurobi.Optimizer)
-set_attribute(model, MOI.TimeLimitSec(), 500)
-sol = optimize!(model)
-graphVRP(sol, x=P[:, 1], y=P[:, 2], linetype = "straight")
+set_optimizer(model, CPLEX.Optimizer)
+set_attribute(model, MOI.TimeLimitSec(), 600)
+optimize!(model)
+graphVRP(model, x=P[:, 1], y=P[:, 2], linetype = "straight")

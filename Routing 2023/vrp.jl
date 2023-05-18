@@ -20,9 +20,8 @@ function createSymmetricalCostMatrix(xcoords::Vector, ycoords::Vector)
     return C
 end
 
-function createTSPModel(C)
+function createTSPModel!(model, C)
     n = size(C, 1)
-    model = Model()
     @variable(model, X[1:n, 1:n], Bin)
     @objective(model, Min, sum(C .* X))
     @constraint(model, [i = 1:n], sum(X[i, 1:n]) == 1)
@@ -42,6 +41,11 @@ function createTSPModel(C)
         end
     end
     set_attribute(model, MOI.LazyConstraintCallback(), callbackRemoveSubcycles)
+end
+
+function createTSPModel(C; optimizer=GLPK.Optimizer)
+    model = Model(optimizer)
+    createTSPModel!(model, C)
     return model
 end
 
@@ -79,12 +83,12 @@ function graphVRP(X::Array; x=[], y=[], linetype="curve", labelnodes=false, save
     nodelabel = collect(0:nv(g)-1)
     nodesizes = nodesize * ones(n)
     for k in 1:K
-        E = findall(isone, X[:, :, k])
+        E = findall(x -> x > 0.5, X[:, :, k])
         for e in E
             add_edge!(g, e[1], e[2])
         end
     end
-    graph = gplot(g, x, y, nodesize=nodesizes, nodelabel=nodelabel, NODELABELSIZE=2, nodefillc=nodefillc, arrowlengthfrac = 0.03, linetype=linetype)
+    graph = gplot(g, x, y, edgestrokec=colorant"black", nodesize=nodesizes, nodelabel=nodelabel, NODELABELSIZE=2, nodefillc=nodefillc, arrowlengthfrac = 0.03, linetype=linetype)
     if saveas != ""
         draw(PDF(saveas, 16cm, 16cm), graph)
     end
