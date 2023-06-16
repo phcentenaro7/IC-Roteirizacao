@@ -1,8 +1,8 @@
 using JLD2
 
 let
-    ntests = 5
-    npoints = 100
+    ntests = 30
+    npoints = 50
     P::Vector{Matrix{Float64}} = []
 
     for i in 1:ntests
@@ -10,5 +10,5 @@ let
         push!(P, newP)
     end
 
-    @save "performancesets100points.jld2" ntests npoints P
+    @save "perfsets50.jld2" P
 end

@@ -1,14 +1,17 @@
 using JuMP
 using GLPK
+using Gurobi
 using BenchmarkTools
 using Graphs
 using GraphPlot
 using Colors
 using Combinatorics
+include("costmatrix.jl")
 
-C = [0 2 5 9 6; 1 0 2 3 4 ; 3 3 0 3 7; 6 5 6 0 5; 9 4 3 2 0]
-n = size(C, 1)
-program = Model(GLPK.Optimizer)
+n = 12
+P = rand(-1000:1000, n, 2)
+C = createSymmetricalCostMatrix(P[:, 1], P[:, 2])
+program = Model(Gurobi.Optimizer)
 @variable(program, X[1:n, 1:n], Bin)
 @objective(program, Min, sum(X .* C))
 @constraint(program, [i = 1:n], sum(X[i, j] for j = 1:n) == 1)

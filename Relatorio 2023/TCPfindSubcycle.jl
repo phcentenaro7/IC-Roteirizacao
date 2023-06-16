@@ -1,23 +1,17 @@
-function findSubcycles(X::Matrix{Float64})
-    n = size(X, 1)
-    unchecked = collect(2:n)
-    path = [1]
-    now = 1
-    subcycles = []
-    while true
-        next = findfirst(x -> x > 0.5, X[now, :])
-        if next == path[1]
-            push!(subcycles, path)
-            if length(unchecked) == 0
-                return subcycles
+function findSubcyclesTSP(edges::Vector{Tuple{Int, Int}}, n::Int)
+    subcycles, unvisited = [], Set(collect(1:n))
+    while !isempty(unvisited)
+        thisCycle, neighbors = Int[], unvisited
+        while !isempty(neighbors)
+            current = pop!(neighbors)
+            push!(thisCycle, current)
+            if length(thisCycle) > 1
+                pop!(unvisited, current)
             end
-            now = unchecked[1]
-            unchecked = unchecked[2:end]
-            path = [now]
-            continue
+            neighbors =
+                [j for (i, j) in edges if i == current && j in unvisited]
         end
-        setdiff!(unchecked, [next])
-        push!(path, next)
-        now = next
+        push!(subcycles, thisCycle)
     end
+    return subcycles
 end
