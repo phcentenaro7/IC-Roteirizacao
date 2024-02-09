@@ -1,0 +1,3 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{lp} \PYG{o}{=} \PYG{n}{Model}\PYG{p}{(}\PYG{n}{GLPK}\PYG{o}{.}\PYG{n}{Optimizer}\PYG{p}{)}
+\end{Verbatim}

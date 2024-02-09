@@ -1,0 +1,102 @@
+\section{Códigos de roteirização}\label{sec:códigos}
+
+\subsection{Implementações do PCV}\label{sec:PCV implementações}
+
+As formulações de PCV discutidas são apresentadas a seguir.
+
+\subsubsection{Formulação DFJ}
+
+\begin{listing}[H]
+\centering
+\inputminted[mathescape,
+               linenos,
+               numbersep=5pt,
+            %   frame=lines,
+            % framesep=2mm
+            ]{julia}{códigos/PCVingenuo.jl}
+\caption{Formulação DFJ do PCV.}
+\label[code]{cod:pcvdfj}
+\end{listing}
+
+\subsubsection{Formulação DFJ com lazy constraints}
+Como mostra Schermer \cite{SCHERMER:23}, o modelo DFJ pode ser implementado com \emph{lazy constraints} por meio de funções mais avançadas do JuMP que promovem uma comunicação direta com o \emph{solver} durante o processo de resolução do problema de roteirização. Iniciamos com o \cref{cod:pcv lazy constraints}, em que adicionamos uma restrição que impede a formação de laços,
+
+\begin{equation}
+    \x{ii} = 0,\ \forall i \in \vb P.
+\end{equation}
+
+Em seguida, é implementada a função de remoção dinâmica de subciclos. Esta função começa checando a condição atual do modelo. A \emph{flag} \julia{CALLBACK_NODE_STATUS_INTEGER} indica que o \emph{solver} encontrou uma solução inteira e, portanto, é hora de procurar por possíveis subciclos e adicionar as \emph{lazy constraints} correspondentes. Para que esta função seja chamada pelo \emph{solver}, é configurado um atributo do modelo que associa ao \emph{solver} a função de remoção de subciclos na forma de \emph{lazy constraints}.
+
+A função que encontra subciclos, por sua vez, recebe a matriz de adjacências da solução atual do problema interpretada como um vetor de arestas, percorrendo as arestas para determinar todos os subciclos do problema. Schermer sugere adicionar apenas a restrição que remova diretamente o menor subciclo do problema.
+
+\begin{listing}[H]
+\centering
+\inputminted[mathescape,
+               linenos,
+               numbersep=5pt,
+               breaklines,
+            %   frame=lines,
+            % framesep=2mm
+            ]{julia}{códigos/dfj.jl}
+\caption{Formulação DFJ do PCV com \emph{lazy constraints}.}
+\label[code]{cod:pcv lazy constraints}
+\end{listing}
+
+\begin{listing}[H]
+\centering
+\inputminted[mathescape,
+               linenos,
+               numbersep=5pt,
+            %   frame=lines,
+            % framesep=2mm
+            ]{julia}{códigos/TSPsubcycle.jl}
+\caption{Função de determinação de subciclos do PCV.}
+\label[code]{cod:subciclos pcv}
+\end{listing}
+
+\subsubsection{Formulação MTZ}
+
+\begin{listing}[H]
+\centering
+\inputminted[mathescape,
+               linenos,
+               numbersep=5pt,
+               breaklines
+            %   frame=lines,
+            % framesep=2mm
+            ]{julia}{códigos/mtz.jl}
+\caption{Formulação MTZ do PCV.}
+\label[code]{cod:pcvmtz}
+\end{listing}
+
+\subsubsection{Formulação GG}
+
+\begin{listing}[H]
+\centering
+\inputminted[mathescape,
+               linenos,
+               numbersep=5pt,
+               breaklines
+            %   frame=lines,
+            % framesep=2mm
+            ]{julia}{códigos/gg.jl}
+\caption{Formulação GG do PCV.}
+\label[code]{cod:pcvgg}
+\end{listing}
+
+\subsection{Implementação do PRVJT genérico}\label{sec:implementação PRVJT genérico}
+
+Uma implementação genérica de PRVJT, baseada no modelo apresentado na \cref{sec:PRVJT genérico}, é mostrada a seguir. Esta versão não considera métodos heurísticos.
+
+\begin{listing}[H]
+\centering
+\inputminted[mathescape,
+               linenos,
+               numbersep=5pt,
+               breaklines
+            %   frame=lines,
+            % framesep=2mm
+            ]{julia}{códigos/prvjt.jl}
+\caption{Formulação genérica do PRVJT}
+\label[code]{cod:prvjt.}
+\end{listing}

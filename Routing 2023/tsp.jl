@@ -6,34 +6,25 @@ using Compose
 using Colors
 using Match
 using JuMP
+using Cairo
+using Fontconfig
 include("costmatrix.jl")
+include("dfj.jl")
+include("mtz.jl")
+include("gg.jl")
 
-function createTSPModel!(model, C)
-    n = size(C, 1)
-    @variable(model, X[1:n, 1:n], Bin)
-    @objective(model, Min, sum(C .* X) / 2)
-    @constraint(model, [i in 1:n], sum(X[i, 1:n]) == 1)
-    @constraint(model, [j in 1:n], sum(X[1:n, j]) == 1)
-    @constraint(model, [i in 1:n], X[i, i] == 0)
-    function callbackRemoveSubcycles(data)
-        status = callback_node_status(data, model)
-        if status != MOI.CALLBACK_NODE_STATUS_INTEGER
-            return
-        end
-        S = findSubcyclesTSP(callback_value.(data, model[:X]))
-        for s in S
-            if 1 < length(s) < n
-                constraint = @build_constraint(sum(model[:X][i, j] for i in s, j in s) <= length(s) - 1)
-                MOI.submit(model, MOI.LazyConstraint(data), constraint)
-            end
-        end
+function createTSPModel!(model, type, C)
+    @match type begin
+        :DFJ => createDFJTSP(model, C)
+        :MTZ => createMTZTSP(model, C)
+        :GG => createGGTSP(model, C)
     end
-    set_attribute(model, MOI.LazyConstraintCallback(), callbackRemoveSubcycles)
+    return model
 end
 
-function createTSPModel(C; optimizer=GLPK.Optimizer)
+function createTSPModel(type, C; optimizer=GLPK.Optimizer)
     model = Model(optimizer)
-    createTSPModel!(model, C)
+    createTSPModel!(model, type, C)
     return model
 end
 
@@ -51,7 +42,8 @@ function getEdges(X::Matrix{Float64})
 end
 
 function findSubcyclesTSP(edges::Vector{Tuple{Int, Int}}, n::Int)
-    subcycles, unvisited = [], Set(collect(1:n))
+    unvisited = Set(collect(1:n))
+    shortest = collect(1:n)
     while !isempty(unvisited)
         thisCycle, neighbors = Int[], unvisited
         while !isempty(neighbors)
@@ -63,9 +55,11 @@ function findSubcyclesTSP(edges::Vector{Tuple{Int, Int}}, n::Int)
             neighbors =
                 [j for (i, j) in edges if i == current && j in unvisited]
         end
-        push!(subcycles, thisCycle)
+        if 1 < length(thisCycle) < length(shortest)
+            shortest = thisCycle
+        end
     end
-    return subcycles
+    return shortest
 end
 
 findSubcyclesTSP(X::Matrix{Float64}) = findSubcyclesTSP(getEdges(X), size(X, 1))

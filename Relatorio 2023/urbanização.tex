@@ -1,0 +1,131 @@
+\section{Urbanização e transporte público}\label{sec:urbanização e transporte público}
+O transporte público é uma necessidade ubíqua no Brasil. Particularmente nos centros urbanos, é comum que existam dificuldades na implementação e manutenção de frotas, devido à alta densidade populacional dos centros e à marginalização de setores da população, que diuturnamente precisam viajar por longos trajetos para garantirem seu sustento. Tendo em vista a grande importância deste assunto, nesta seção, são abordados fatos e tendências do transporte público, no Brasil e no mundo, que servem como inspiração para o estudo da modelagem e resolução de problemas de roteamento de veículos.
+
+\subsection{Vantagens e tendências do transporte público}\label{sec:vantagens transporte público}
+
+Litman \cite{LITMAN:12}, em pesquisa conduzida nos Estados Unidos, descreve vários benefícios do transporte público para seus usuários. Alguns dos mais importantes que podemos elencar são:
+
+\begin{itemize}
+    \item \textbf{Locomoção mais variada:} Quanto melhor a estrutura do transporte público de uma região, aliada à promoção de bicicletas, caminhadas e transportes alternativos, menor é o uso de automóveis particulares por parte da população. Verifica-se ainda que a média de automóveis particulares, por residência, em regiões com transporte público de alta qualidade, pode chegar a metade do que se observa em regiões com pouco investimento em transporte público.
+    \item \textbf{Aumento do tempo de exercício físico:} Usuários de transporte público ou alternativo precisam andar pelo menos duas vezes mais para chegar aos seus destinos diários. Esta vantagem de tempo gasto com exercícios se mantém, visto que o tempo gasto com exercícios recreativos é aproximadamente o mesmo para usuários de transporte público ou alternativo e usuários de automóveis privados.
+    \item \textbf{Declínio do número de fatalidades no trânsito:} Quando bem implementado e largamente utilizado, o transporte público incentiva mais cuidado por parte de motoristas e da legislação, pois mais pessoas passam a andar a pé ou de bicicleta. Como mostram estatísticas internacionais, comunidades em que o transporte público é bem integrado à vida das pessoas têm consideravelmente menos fatalidades no trânsito.
+    \item \textbf{Redução da poluição veicular:} Ônibus elétricos e ônibus movidos a combustão mais recentes produzem cada vez menos gases nocivos, conforme evoluem as regulamentações sobre emissões. Além disso, como estes veículos podem transportar dezenas de pessoas e desincentivam o uso de veículos particulares, a poluição também é reduzida graças à redução do número de veículos nas ruas.
+    \item \textbf{Integração comunitária:} Em regiões com transporte público de qualidade, a população tem acesso facilitado a serviços essenciais (saúde, educação, emprego, víveres, etc.), o que significa que as pessoas em geral terão melhores condições de saúde, mais oportunidades econômicas, menores gastos com transporte e manutenção de veículos particulares e melhores condições de saúde mental. Todas estas questões são também importantes para a administração da cidade, pois o acesso facilitado a atendimento médico permite que as pessoas se consultem antes que seus problemas de saúde se agravem. Da mesma maneira, o acesso facilitado a educação e emprego significa que mais pessoas terão acesso a maiores graus de instrução, o que pode aumentar a diversidade de profissionais do mercado da região e beneficiar a economia.
+\end{itemize}
+
+Ademais, Schwab \cite{SCHWAB:19} apresenta considerações importantes sobre as tendências de desenvolvimento das cidades. De acordo com relatório de pesquisa do Fórum Econômico Mundial \cite{FEM:15}, que ouviu 816 executivos de grandes empresas de tecnologia e inovação, a expectativa, em 2015\footnote{Talvez esta expectativa tenha sido atrasada desde então, devido à pandemia de Covid-19.}, de 64\% dos entrevistados era que até 2025 surja a primeira cidade com mais de 50 mil habitantes e sem semáforos. Diz também Schwab que
+
+\begin{displayquote}
+    \textelp{} os avanços tecnológicos de sensores, sistemas óticos, processadores embutidos, maior segurança para os pedestres e para o transporte não motorizado levarão à maior adoção do transporte público, redução dos congestionamentos e da poluição, melhor saúde e trajetos mais rápidos, mais previsíveis e menos caros.
+\end{displayquote}
+
+Schwab também argumenta que as cidades que mais rapidamente conseguirem integrar novas tecnologias aos seus espaços públicos atrairão o maior número de pessoas qualificadas para o seu desenvolvimento. Ele acrescenta:
+
+\begin{displayquote}
+    \textelp{} estudos mostram que o aumento das áreas verdes de uma cidade em 10\% poderia compensar o aumento da temperatura causado pelas mudanças climáticas \textelp{}.
+\end{displayquote}
+
+Segundo Bursztyn e Eiró \cite{BURSZTYN:15}, a preocupação com as mudanças climáticas e seus efeitos é maior entre pessoas com maior grau de escolaridade. Logo, as tecnologias verdes (particularmente, como argumentaremos, os ônibus elétricos) devem ser foco de investimento por parte das cidades que desejarem atrair estes demográficos.
+
+Um estudo de Lima, Silva e Albuquerque Neto \cite{LIMA:19} aponta iniciativas de adoção do transporte por ônibus elétricos em cidades como Amsterdã, Cidade do Cabo, Copenhague, Hamburgo, Los Angeles, Nova Iorque, Oslo, Rugao e São Francisco. O objetivo destas cidades é substituir completamente os ônibus a combustão pelos elétricos.
+
+Em suma, existe uma tendência entre os países mais desenvolvidos de investir nas novas tecnologias elencadas pelo Fórum Econômico Mundial \cite{FEM:15}, sendo de particular interesse para esta análise as que dizem respeito ao meio ambiente. Estas tecnologias são importantes pela redução dos impactos ambientais dos meios urbanos e pela crescente preocupação da população com seus efeitos no planeta. Como argumentamos a seguir, na \cref{sec:impactos ambientais ônibus elétricos}, é importante que as cidades brasileiras tentem seguir estas tendências adicionando ônibus elétricos a suas frotas e retirando sempre que possível os ônibus a combustão de circulação.
+
+\subsection{Sobre ônibus elétricos}\label{sec:impactos ambientais ônibus elétricos}
+Para entender os investimentos em ônibus elétricos realizados por grandes cidades, precisamos elencar seus benefícios em relação aos ônibus a combustão. O trabalho de Lima, Silva e Albuquerque Neto \cite{LIMA:19} é bastante esclarecedor a este respeito. Os autores discorrem sobre a existência de dois tipos de ônibus elétricos, os totalmente elétricos e os híbridos, apontando suas principais características. Em seguida, discutem os benefícios ambientais da implementação de tais veículos no transporte público. Por fim, os autores abordam algumas das principais dificuldades relacionadas à implementação destes veículos.
+
+\subsubsection*{Ônibus totalmente elétricos}
+Este tipo de ônibus funciona com base em baterias recarregáveis. Por este motivo, gera consideravelmente menos partículas do que modelos a combustão, além de suas emissões de gases de efeito estufa serem nulas. Um benefício de longo prazo é que este tipo de ônibus é mecanicamente mais simples, sendo mais barata a sua manutenção. Ônibus totalmente elétricos podem ser movidos por vários tipos de motores elétricos, que têm a vantagem de fornecerem maior aceleração ao veículo do que motores convencionais. Devido às suas características, ônibus totalmente elétricos têm aproximadamente três vezes a eficiência dos ônibus a combustão (59\% a 62\% de eficiência contra 17\% a 21\% de eficiência, respectivamente).
+
+As baterias de ônibus totalmente elétricos têm um tempo de vida útil estimado entre 8 e 10 anos, podendo ser utilizadas para alimentar outros tipos de serviço após este período. Atualmente, as baterias mais utilizadas são as de íons de lítio, graças à sua eficiência. No entanto, sua reciclagem é muito custosa. É possível que no futuro estas baterias percam sua posição dominante no mercado para as de níquel-hidreto metálico, que têm grande vida útil mas, atualmente, têm alto custo e desvantagens físicas comparadas as de íons de lítio.
+
+Uma desvantagem dos ônibus totalmente elétricos em relação aos de combustão é que o projeto dos sistemas auxiliares (como portas, direção hidráulica e compressor do ar condicionado) é mais complicado, visto que cada sistema pode precisar do seu próprio motor em configurações específicas. Desta forma, o projeto de controle individual para cada um destes motores acarreta custos adicionais com componentes, o que pode deixar estes veículos mais complexos.
+
+\subsubsection*{Ônibus híbridos}
+Ônibus híbridos misturam aspectos de ônibus totalmente elétricos com ônibus a combustão, sendo mais eficientes que os modelos a combustão e tendo a possibilidade de serem utilizados como fonte de energia para outros veículos. Ademais, seus componentes têm tamanho reduzido com o uso inteligente das baterias.
+
+Estes veículos são hibridizados por meio de extensores de autonomia, definidos pelos autores como
+
+\begin{displayquote}
+    \textelp{} sistemas embarcados capazes de gerar energia durante a operação, recarregando as baterias e consequentemente estendendo a autonomia do veículo.
+\end{displayquote}
+
+Existem vários tipos de extensores de autonomia, sendo os principais as pilhas a combustível, grupo motor-gerador, motores a combustão interna e supercapacitores. Em geral, estes componentes permitem a recuperação ou maior eficiência energética, garantindo mais eficiência de operação. Vale prestar atenção à seguinte observação dos autores:
+
+\begin{displayquote}
+    \textelp{} em percursos com baixa necessidade de frenagens, como rodovias, as vantagens relativas à recuperação de energia diminuem a eficiência do veículo híbrido. Dessa forma, tais veículos se aproveitam melhor deste sistema em percursos com um maior número de frenagens, que é o caso do transporte urbano.
+\end{displayquote}
+
+Os veículos híbridos podem ser classificados como: em série, caso no qual são movidos por motor elétrico alimentado pelas baterias ou pelos extensores de autonomia; em paralelo, podendo ser tracionados por motor elétrico ou a combustão, juntos ou individualmente; e em série-paralelo, unindo características dos dois.
+
+\subsubsection*{Benefícios ambientais e econômicos}
+Os ônibus elétricos são muito mais eficientes do que os modelos a combustão no que se refere a emissão de substâncias nocivas ao meio-ambiente. Um problema que pode surgir com a implementação deste tipo de ônibus diz respeito ao trajeto pelo qual passa a energia até abastecê-lo. Se esta energia não for produzida de maneira limpa, pode ser enganosa a noção de que a implementação de ônibus elétricos não acarreta a produção de poluição. Felizmente, no Brasil, 74\% da energia elétrica provém de fontes limpas e renováveis. Além disso, estas fontes, em geral, ficam a grande distância da população, o que permite maior facilidade na captura de quaisquer materiais particulados que o processo de fornecimento de energia aos ônibus elétricos possa gerar, sem danos à população.
+
+No que se refere à redução da emissão de gás carbônico, os autores observam que
+
+\begin{displayquote}
+    \textelp{} [no Brasil,] a substituição dos ônibus e micro-ônibus por modelos elétricos, considerando toda a geração de energia para carregamento desses ônibus, garantiria uma redução de 17,44 milhões de toneladas de CO$_2$ (91,4\%) para o ano de 2012.
+\end{displayquote}
+
+Quanto aos materiais particulados, os autores esclarecem que
+
+\begin{displayquote}
+    a produção de energia elétrica para alimentar a frota de micro-ônibus e ônibus urbanos elétricos emitiria 58,9\% mais material particulado do que a própria combustão do diesel \cite{LIMA:19}.
+\end{displayquote}
+
+No entanto, como já foi esclarecido, o Brasil tem as condições geográficas necessárias para lidar com estes materiais particulados eficientemente.
+
+Os ônibus elétricos -- e os híbridos, quando operando somente com base em motor elétrico -- também ocasionam consideravelmente menos poluição sonora do que ônibus a combustão, tornando os espaços urbanos mais agradáveis e saudáveis.
+
+Em geral, ônibus elétricos ainda requerem investimentos mais caros do que ônibus a combustão. No entanto, verifica-se que, escolhendo baterias apropriadas para a distância percorrida diariamente por cada ônibus, após atingirem determinada quilometragem, os ônibus elétricos passam a ser mais baratos do que os modelos a combustão. Além disso, as tendências internacionais indicam que os aumentos no preço do petróleo serão maiores do que no preço da eletricidade, e espera-se que os conjuntos de baterias dos ônibus elétricos se tornem consideravelmente mais baratos até 2030, ano em que ônibus elétricos devem custar tanto ou menos que ônibus a combustão\footnote{Estas expectativas são da Bloomberg New Energy Finance \cite{BLOOMBERG:18}, e foram publicadas no ano de 2018. Novamente, é importante ressaltar a possibilidade de a pandemia de Covid-19 ter afetado as expectativas.}.
+
+\subsubsection*{Dificuldades de implementação}\label{sec:dificuldades de implementação}
+Em geral, como os ônibus elétricos ainda são mais caros do que ônibus a combustão, são vistos como investimentos mais arriscados pelas operadoras de ônibus. Muitos dos ônibus elétricos adquiridos por países europeus vieram de subsídios federais, o que não constitui uma forma viável de continuar adquirindo estes veículos a longo prazo. Existe também o fato de ônibus a combustão já serem consagrados e serem impulsionados por indústrias e fabricantes já muito fortalecidos em cenários nacionais, especialmente em países em desenvolvimento.
+
+A transição para modelos elétricos também é confrontada por problemas de padronização de infraestruturas de carregamento, apesar de haver avanços neste sentido proporcionados por acordos entre fabricantes de veículos elétricos. Existem também receios quanto à possibilidade de apagões afetarem as operações de transporte público, e há ainda a possibilidade de muitas cidades estarem esperando os preços de ônibus elétricos abaixarem antes de iniciarem seus investimentos neste tipo de tecnologia.
+
+Apesar destas dificuldades, os benefícios dos ônibus elétricos têm peso considerável pelos motivos apresentados até aqui. Na conclusão de seu trabalho, Lima, Silva e Albuquerque Neto fazem a seguinte observação a respeito do futuro desta categoria de veículos:
+
+\begin{displayquote}
+    \textelp{} Além dos novos arranjos de financiamento, é necessário se pensar em novos desenhos de contrato com alocação de risco adequada e que garanta que o risco da tecnologia seja alocado a quem tem maior capacidade de suportá-lo. É possível que novos \emph{players} entrem no mercado de transporte urbano, como fabricantes de veículos oferecendo \emph{leasing} e manutenção dos ônibus, e \emph{utilities} de energia oferecendo infraestrutura de carregamento.
+\end{displayquote}
+
+Assim, é possível esperar que ônibus elétricos se tornem cada vez mais atraentes e viáveis conforme seu mercado se desenvolve. Feita esta análise, é importante considerar desafios especificamente brasileiros que a adesão a este tipo de veículo pode encontrar.
+
+\subsection{O desafio do espraiamento no transporte público brasileiro}
+Dados do Ipea \cite{IPEA:16} mostram que cerca de 85\% da população brasileira vive hoje em centros urbanos, sendo 36 cidades com mais de 500 mil habitantes e um restante de quarenta regiões metropolitanas que abrigam uma população total de mais de 80 milhões de habitantes. Os dados indicam que a intensa industrialização brasileira da década de 1940 em diante, que estimulou vários êxodos rurais\footnote{Por êxodo rural, entende-se o deslocamento em massa de pessoas das zonas rurais do país para centros urbanos. Por exemplo, o êxodo rural que ocorreu no Brasil entre 1950 e 1995, onde cerca de 50 milhões de habitantes realizaram tal deslocamento \cite{IPEA:00}.}, não foi acompanhada por uma urbanização de similar velocidade.
+
+Uma consequência da urbanização mal-elaborada do Brasil é o espraiamento \cite{IPEA:10}, condição na qual os grandes centros urbanos, em vez de abrigarem todas as camadas da população, tornam-se excludentes. Os afetados por esta exclusão são os mais pobres, que precisam se estabelecer em regiões periféricas para terem onde morar. Como consequência disso, estas pessoas têm consideravelmente mais dificuldade de acesso a serviços públicos essenciais, que ficam concentrados nos centros urbanos. Como o transporte público está incluso na lista de serviços que são precarizados para estas regiões, muitas pessoas acabam recorrendo ao uso de veículos particulares, o que gera mais congestionamentos e acidentes \cite{IPEA:16}.
+
+O aumento do número de acidentes, em particular, se deve não apenas ao aumento do número de veículos em circulação, mas às próprias características do espraiamento. Litman \cite{LITMAN:12} explica que isso se deve ao fato de os trajetos longos necessários para se chegar aos centros urbanos estimularem uma direção menos segura, com menos atenção por parte dos motoristas e mais velocidade nas pistas. Consequentemente, embora estes longos trajetos tendam a ter menos acidentes, os acidentes que acontecem tendem a ser mais graves, ou mesmo fatais. Isso contrasta com os benefícios do transporte público identificados na \cref{sec:vantagens transporte público}, um dos quais é a redução da severidade dos acidentes em centros urbanos bem-planejados, apesar de concentrarem maior número de acidentes.
+
+\subsubsection*{O exemplo de espraiamento de Araraquara}
+Borchers e Figueirôa-Ferreira \cite{BORCHERS:22} descrevem um caso de espraiamento na cidade de Araraquara, São Paulo. Em 1959, foi fundada a Companhia Troleibus Araraquara (CTA), uma companhia pública que oferecia serviço de transporte por trólebus para a população. Os trólebus eram ônibus elétricos alimentados por um sistema de cabos suspensos sobre as ruas da cidade. A princípio, a companhia tinha um centro urbano bem-delimitado para atender, sendo capaz de servir satisfatoriamente à população. No entanto, na década de 1970, começaram a surgir os primeiros grandes obstáculos ao serviço, na forma de loteamentos espraiados. Como os trólebus tinham sua mobilidade limitada por cabos, argumentou-se que seria mais difícil e custoso implementar novas linhas do serviço que atendessem os espraiamentos. Além disso, as ruas dos bairros espraiados não eram asfaltadas, o que trazia ainda mais problemas para a implementação dos trólebus. Assim, uma solução privada por ônibus a combustão apareceu na cidade, conseguindo atender as regiões mais espraiadas. Em 1999, a própria CTA abandonou os trólebus em prol de uma frota baseada totalmente em combustão, devido à maior simplicidade de atendimento às regiões espraiadas.
+
+O objetivo deste exemplo é identificar por que o espraiamento pode acontecer. A conclusão à qual os autores chegaram, neste caso, é de que uma lógica \emph{neoliberal} afetou o desenvolvimento urbano da cidade. Os autores definem o neoliberalismo como
+
+\begin{displayquote}
+    \textelp{} uma doutrina econômico-política e filósofo-cultural que instrumentaliza de forma coercitiva e coesiva forças de acumulação por espoliação através do aparelhamento do Estado, do controle dos meios de produção -- de bens, serviços, do espaço e do próprio ser humano -- e do domínio ou subjugo de todos aqueles cuja existência serve apenas para a produção de mais-valia \textelp{}.
+\end{displayquote}
+Os autores definem \emph{urbanismo neoliberal} como
+
+\begin{displayquote}
+    \textelp{} a específica aplicação dessa doutrina [neoliberal] de destruição criativa no planejamento e gestão do espaço urbano, de seus habitantes e aspectos econômicos, para reconfigurar a organização territorial e assim suscitar novas formas de produção desigual do espaço urbano e acumulação de capital \textelp{}.
+\end{displayquote}
+
+Segundo o estudo, Araraquara era uma cidade marcada por grandes propriedades rurais. Com os êxodos rurais, os grandes proprietários de terras incentivaram a urbanização da região como forma de valorizar seus terrenos e, mais tarde, por um processo de especulação, vendê-los a preços mais altos. Desta forma, o centro urbano era rodeado por lotes desocupados que permaneceram nesta situação por décadas. Eventualmente, na década de 1970, o acesso à terra se tornou impossível para a população mais pobre, devido aos altos preços dos lotes em torno do centro urbano. Assim, os mais pobres tiveram que se estabelecer em terrenos mais distantes, dando início ao processo de espraiamento da cidade. Mais tarde, na década de 1980, os lotes intermediários finalmente começaram a ser ocupados, o que retardou ainda mais a possibilidade de investimentos nas regiões periféricas, já que os lotes intermediários, por estarem mais próximos do centro urbano, começaram a ser atendidos primeiro.
+
+Como o transporte público chegou mais cedo aos terrenos mais próximos do centro urbano, isso os valorizou ainda mais, incentivando o investimento em construções verticais. Evidentemente, isso retarda ainda mais o atendimento às regiões periféricas, pois surge a necessidade de investir mais no centro urbano para atender a uma população cada vez mais densa.
+
+Os autores argumentam que este processo não desencadeou o sucateamento do serviço de trólebus por acaso. Dizem eles que a CTA
+
+\begin{displayquote}
+    \textelp{} foi criada como uma sociedade anônima, e a composição de capital foi realizada através de uma cobrança adicional no Imposto Predial e Territorial Urbano (IPTU) \textelp{} \cite{BORCHERS:22},
+\end{displayquote}
+o que significa que quem financiava o serviço era a população, incluindo os moradores dos bairros espraiados, aos quais o serviço sequer chegava. Outra consequência importante deste modelo é que os maiores proprietários de terra eram também os maiores acionistas da empresa. Com o desinteresse crescente dos mais pobres em suas ações, a empresa foi ficando cada vez mais concentrada justamente nas mãos daqueles a quem menos interessava expandir o serviço da CTA para as regiões espraiadas. Com o tempo, isso levou ao fortalecimento das empresas privadas de transporte e, eventualmente, a CTA começou a dar prejuízo. Este fato foi utilizado para justificar a privatização da empresa, em 2016, além de sua concessão a um consórcio formado por duas empresas privadas.
+
+Este exemplo mostra que o espraiamento, apesar de ser um fenômeno comum no Brasil, não é inevitável. Apesar de ser interessante modelar e analisar matematicamente este problema, o caso de Araraquara serve para instigar a seguinte pergunta: De que maneira podemos utilizar as ciências sociais para prevenir a consolidação deste tipo de fenômeno no território brasileiro? Afinal, neste caso, seria mais interessante se o fenômeno do espraiamento constituísse uma situação meramente imaginária -- se fosse apenas o delírio de um matemático aplicado, em vez de algo que se verifica na realidade. Pelo contrário, o exemplo de Araraquara nos remete ao que escreveu Sérgio Buarque de Holanda \cite{HOLANDA:20}:
+
+\begin{displayquote}
+    A democracia no Brasil foi sempre um lamentável mal-entendido. Uma aristocracia rural e semifeudal importou-a e tratou de acomodá-la, onde fosse possível, aos seus direitos ou privilégios, os mesmos privilégios que tinham sido, no Velho Mundo, o alvo da luta da burguesia contra os aristocratas.
+\end{displayquote}

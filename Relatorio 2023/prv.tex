@@ -1,0 +1,131 @@
+\section{Problemas de roteamento de veículos com janelas de tempo}\label{sec:PRVJT}
+O objetivo desta seção é introduzir problemas de roteamento de veículos (PRVs), que são generalizações do PCV para frotas \cite{DANTZIG:59}. Existem vários tipos de PRVs, cada qual com suas próprias famílias de restrições \cite{TORO:16,VIEIRA:13}. Uma consequência desta variedade é que a complexidade computacional dos PRVs é maior do que a do PCV, fato que se reflete no empenho muito maior da comunidade científica em encontrar soluções exatas para o PCV do que para PRVs \cite{LAPORTE:87}.
+
+O PRV com janelas de tempo (PRVJT) considera que cada ponto tem uma janela de tempo específica para ser atendido por um veículo. Como o PRVJT não considera o nível de combustível dos veículos, ele é mais apropriado para criar modelos básicos para ônibus a combustão, cujo combustível dura mais e pode ser reabastecido rapidamente. As janelas de tempo de cada região a ser atendida podem ser definidas conforme o planejamento urbano da cidade.
+
+\subsection{Modelo genérico}\label{sec:PRVJT genérico}
+\textcite{VIEIRA:13} apresenta o seguinte modelo de PRVJT, que é uma extensão de um problema capacitado (PRVC), em que os veículos têm uma capacidade máxima de carga e cada ponto tem sua própria demanda. Uma implementação básica deste modelo pode ser encontrada no \cref{sec:implementação PRVJT genérico}.
+
+\begin{align}
+    \min&\sum_{\substack{i,j\in \mcal{V}\\ k\in K}}c_{ij}x_{ijk} \label[expression]{eq:prvjt1}\\
+    \text{s.a }&\sum_{\substack{k \in K \\ j \in \mcal{V}\fast}} x_{0jk} \leq |K|,& \label[constraint]{eq:prvjt2}\\
+    &\sum_{j\in \mcal{V}\fast}x_{0jk} = \sum_{j\in \mcal{V}\fast}x_{j0k} \leq 1,&\forall k \in K,& \label[constraints]{eq:prvjt3}\\
+    &\sum_{\substack{k\in K \\ j\in \mcal{V}}}x_{ijk} = 1,&\forall i \in \mcal{V}\fast,& \label[constraints]{eq:prvjt4}\\
+    &\sum_{j\in \mcal{V}}x_{ijk} - \sum_{j \in \mcal{V}}x_{jik} = 0,&\forall k \in K,\ i \in \mcal{V}\fast,& \label[constraints]{eq:prvjt5}\\
+    &\sum_{\substack{i,j\in S \\ k \in K}}x_{ijk} \leq |S| - v(S),&\forall S \subseteq \mcal{V}\fast,\ |S| \geq 2,& \label[constraints]{eq:prvjt6}\\
+    &\sum_{\substack{k \in K \\ i \in \mcal{V} \\ i \neq j}}x_{ijk}(b_i + s_i + t_{ij}) \leq b_j,&\forall j \in \mcal{V}\fast,& \label[constraints]{eq:prvjt7}\\
+    &e_i \leq b_i \leq l_i,&\forall i \in \mcal{V},& \label[constraints]{eq:prvjt8}\\
+    &x_{ijk} \in \{0,1\},&\forall i, j \in \mcal{V},\ k \in K \label[constraints]{eq:prvjt9}.
+\end{align}
+
+Esta formulação considera o problema como um grafo $G = (\mcal{V}, \mcal{A})$. O depósito é o vértice $0$, e $\mcal{V}\fast = \mcal{V} \backslash \{0\}$. Considera-se uma frota $K$ de veículos homogêneos de capacidade $Q$, e para cada ponto existe uma variável $m_i$ indicando sua demanda. As variáveis $e_i$ e $l_i$ indicam o início e o fim do intervalo de atendimento a cada ponto, inclusive do depósito. A variável $b_i$ indica o horário em que um veículo chega ao ponto $i$; $s_i$ indica o tempo de atendimento ao ponto $i$; $t_{ij}$ indica o tempo de deslocamento necessário entre $i$ e $j$.
+
+A \cref{eq:prvjt1} define o problema de minimização de distâncias. Usam-se $|K|$ matrizes de adjacência, uma para cada veículo. A \cref{eq:prvjt2} garante que não saiam do depósito mais veículos do que a frota comporta. Também é possível garantir que todos os veículos saiam do depósito, transformando a inequação em equação, ou considerando o depósito como sendo dois vértices distintos, $0$ e $n + 1$. Neste caso, os veículos que não forem utilizados farão ciclo entre $0$ e $n + 1$ \cite{SHERBENY:10}. As \cref{eq:prvjt3} asseguram que todos os veículos saiam e retornem ao depósito. As \cref{eq:prvjt4} faz com que apenas um veículo atenda cada ponto. As \cref{eq:prvjt5} garantem que os veículos saiam de todos os pontos nos quais entrarem.
+
+As \cref{eq:prvjt6} impedem que sejam formados ciclos que violem as capacidades dos veículos. A função $v(S)$ retorna o número mínimo de veículos necessários para atender o conjunto de pontos. É possível defini-la como
+
+\begin{equation}
+    v(S) = \left\lceil\sum_{i \in S}\frac{m_i}{Q}\right\rceil.
+\end{equation}
+
+Supondo um conjunto de $n$ pontos, se $m$ veículos forem necessários para atendê-los, então restam a estes veículos $n - m$ pontos para os quais se deslocar. Quaisquer deslocamentos a mais entre os pontos de $S$ denunciam violações às restrições de capacidade dos veículos.
+
+As \cref{eq:prvjt7} asseguram que o veículo que vai de $i$ a $j$ finalizará o seu atendimento a $i$ a tempo de chegar a $j$ no horário de atendimento. As \cref{eq:prvjt8} garantem que todos os veículos cheguem aos pontos de entrega dentro da janela de tempo definida para cada ponto. Por fim, as \cref{eq:prvjt9} garantem que as variáveis de decisão sejam todas inteiras.
+
+As \cref{eq:prvjt7} têm comportamento não-linear, pois tanto $x_{ijk}$ quanto $b_i$ são variáveis de decisão. \textcite{KALLEHAUGE:05,CORDEAU:05} propõem linearizar esta expressão trocando-a por outra da forma
+
+\begin{equation}
+    b_i + s_i + t_{ij} - M_{ij}(1 - x_{ijk}) \leq b_j,\ \forall i,j \in \mcal{V}, \forall k \in K,\label[constraints]{eq:linearização}
+\end{equation}
+onde $M_{ij}$ é uma constante cujo valor precisa ser, no mínimo, $\max\{l_i + t_{ij} - e_j\}$, $(i,j) \in \mcal{A}$.
+
+É possível utilizar as restrições de capacidade para definir um número máximo de pontos que cada ônibus possa atender. Se capacidades não forem uma preocupação, é possível escolher $Q \to \infty$.
+
+\subsection{Modelo escolar com rotas pré-determinadas}
+
+Problemas em uma mesma categoria podem ter formulações radicalmente diferentes, a depender das considerações matemáticas tecidas. \textcite{FÜGENSCHUH:04}, por exemplo, propõem um modelo de PRVJT que permite a roteirização de ônibus escolares que também podem ser usufruídos pela população geral. Este modelo considera $\mcal{S}$ o conjunto de escolas a serem atendidas. Para toda escola $s \in \mcal{S}$, é definida uma janela de tempo de atendimento $[\underline{\tau}_s,\overline{\tau}_s]$, com $\underline{\tau}_s,\overline{\tau}_s\in \mathbb{Z_+}$.
+
+Esta formulação define como \emph{viagens}\footnote{\emph{"Trips".}} as sequências de pontos pelas quais cada ônibus deve passar até chegar a cada escola. Trabalha-se com um conjunto já definido de viagens, $\mcal{V}$, com cada viagem individual sendo representada por $t \in \mcal{V}$, e cada aresta que conecta os pontos das viagens estando contida em $\mcal{A}$. As constantes $\underline{\alpha}_t$ e $\overline{\alpha}_t$, com $\underline{\alpha}_t \leq \overline{\alpha}_t$ e $\underline{\alpha}_t, \overline{\alpha}_t\in \mathbb{Z}_+$, definem o intervalo aceitável de valores para $\alpha_t$, que indica quando a viagem $t$ é iniciada. O tempo entre o início e o fim de uma viagem é $\delta_t^{\text{trip}} \in \mathbb{Z_+}$.
+
+$\mcal{P}$ é definido como o conjunto das tuplas $(s,t)$ que associam uma viagem $t$ a uma escola $s$. O tempo entre o início e o fim de uma viagem até uma escola é $\delta_t^{\text{school}}\in \mathbb{Z_+}$. O intervalo $[\underline{\omega}_{st}^{\text{school}},\overline{\omega}_{st}^{\text{school}}]$, com $\underline{\omega}_{st}^{\text{school}},\overline{\omega}_{st}^{\text{school}} \in \mathbb{Z_+}$, define quanto tempo os alunos podem esperar pelo ônibus.
+
+É possível que um aluno precise passar por mais do que uma viagem para chegar à sua escola. Neste caso, considera-se o conjunto $\mcal{C}$ de tuplas $(t_1,t_2)$, que representam uma \emph{troca}\footnote{\emph{"Change".}} da viagem $t_1$ para a viagem $t_2$. A viagem $t_1$ é chamada de \emph{feeder}, e $t_2$ é chamada de \emph{collector}. O tempo decorrido entre o começo de uma viagem \emph{feeder} e a chegada até o ponto de troca é $\delta_{t_1t_2}^{\text{feeder}} \in \mathbb{Z_+}$. Já o tempo que o ônibus que coleta os alunos deixados leva para chegar a este ponto é $\delta_{t_1t_2}^{\text{collector}} \in \mathbb{Z_+}$. O intervalo de tempo aceitável de espera no ponto que conecta as duas viagens é $[\underline{\omega}_{t_1t_2}^{\text{change}}, \overline{\omega}_{t_1t_2}^{\text{change}}]$, com $\underline{\omega}_{t_1t_2}^{\text{change}}, \overline{\omega}_{t_1t_2}^{\text{change}} \in \mathbb{Z}_+.$
+
+Ônibus que tiverem terminado suas viagens retornam ao depósito. A conexão entre viagens servidas por um mesmo ônibus é chamada de \emph{bloco}. O deslocamento entre o último ponto de uma viagem $t_1$ e o primeiro ponto de uma viagem $t_2$ são chamados de \emph{shifts}. O tempo necessário para completar um \emph{shift} é $\delta_{t_1t_2}^{\text{shift}} \in \mathbb{Z}_+$.
+
+A cada viagem são associadas variáveis $v_t$ e $w_t$, sendo $v_t = 1$ se $t$ for a primeira viagem em um bloco, ou $0$ do contrário. A variável $w_t$ é igual a $1$ se $t$ for a última viagem do bloco, ou $0$ do contrário. Também consideram-se variáveis $x_{t_1t_2} \in \{0,1\}$, com $x_{t_1t_2} = 1$ apenas se um ônibus servir $t_2$ após servir $t_1$.
+
+O modelo proposto pelos autores é:
+
+\begin{align}
+    \min&\sum_{t \in \mcal{V}}C_tv_t + \sum_{(t_1,t_2) \in \mcal{A}}\delta_{t_1t_2}^{\text{shift}}x_{t_1t_2},\label[expression]{eq:fugenschuh1}\\
+    \text{s.a }&\sum_{(t_1,t_2) \in \mcal{A}}x_{t_1t_2} + v_{t_2} = 1,&\forall t_2 \in \mcal{V},\label[constraints]{eq:fugenschuh2}\\
+    &\sum_{(t_1,t_2) \in \mcal{A}}x_{t_1t_2} + w_{t_1} = 1,&\forall t_1 \in \mcal{V},\label[constraints]{eq:fugenschuh3}\\
+    &\alpha_{t_1} + \delta_{t_1}^{\text{trip}} + \delta_{t_1t_2}^{\text{shift}} - M (1-x_{t_1t_2}) \leq \alpha_{t_2},&\forall(t_1,t_2) \in \mcal{A},\label[constraints]{eq:fugenschuh4}\\
+    &\alpha_{t_1} + \delta_{t_1t_2}^{\text{feeder}} + \underline{\omega}_{t_1t_2} \leq \alpha_{t_2} + \delta_{t_1t_2}^{\text{collector}},&\forall(t_1,t_2)\in\mcal{C},\label[constraints]{eq:fugenschuh5}\\
+    &\alpha_{t_1} + \delta_{t_1t_2}^{\text{feeder}} + \overline{\omega}_{t_1t_2} \geq \alpha_{t_2} + \delta_{t_1t_2}^{\text{collector}},&\forall(t_1,t_2)\in\mcal{C},\label[constraints]{eq:fugenschuh6}\\
+    &\alpha_t + \delta_{st}^{\text{school}} + \underline{\omega}_{st}^{\text{school}} \leq \underline{\tau}_s + 5\tau_s,&\forall(s,t) \in \mcal{P},\label[constraints]{eq:fugenschuh7}\\
+    &\alpha_t + \delta_{st}^{\text{school}} + \overline{\omega}_{st}^{\text{school}} \geq \underline{\tau}_s + 5\tau_s,&\forall(s,t) \in \mcal{P}.\label[constraints]{eq:fugenschuh8}
+\end{align}
+
+A \cref{eq:fugenschuh1} indica que este é um problema de minimização biobjetivo. Deseja-se minimizar as distâncias percorridas e o tempo de \emph{shift} dos ônibus que servirem blocos. As \cref{eq:fugenschuh2} asseguram que cada viagem será ou a primeira realizada por um ônibus, ou estará conectada a uma viagem anterior. Por outro lado, as \cref{eq:fugenschuh3} garantem que cada viagem seja a última, ou que seja antecessora de outra.
+
+As \cref{eq:fugenschuh4} garantem que todos os ônibus que conectam viagens $t_1$ e $t_2$ completem $t_1$ a tempo de começarem $t_2$. As \cref{eq:fugenschuh5,eq:fugenschuh6} forçam os ônibus de viagens do tipo \emph{collector} a chegarem aos pontos de coleta dentro do intervalo aceitável de espera dos alunos. As \cref{eq:fugenschuh7,eq:fugenschuh8} definem os tempos de início das aulas para cada escola\footnote{As \cref{eq:fugenschuh5,eq:fugenschuh6,eq:fugenschuh7,eq:fugenschuh8} criam dependências entre as janelas de tempo, razão pela qual os autores classificam o modelo completo como um PRV de \emph{coupled time windows} (CTW).}. Neste caso, os autores consideraram que os tempos aceitáveis sejam separados por intervalos de 5 minutos, com
+
+\begin{equation}
+    \tau_s = \frac{\overline{\tau_s} - \underline{\tau_s}}{5}.
+\end{equation}
+
+Posteriormente, \textcite{FÜGENSCHUH:09} apresentou uma versão expandida deste modelo, com testes de caso para escolas alemãs. Constatou-se que seria possível diminuir de 10 a 25\% a frota de ônibus em operação nos locais selecionados.
+
+\subsection{Modelo de frota mista}
+As dificuldades associadas à aquisição de ônibus elétricos destacadas na \cref{sec:dificuldades de implementação} tornam uma modelagem mista interessante. Nesta seção, é apresentado um modelo de \emph{Electric Fleet Size and Mix Vehicle Routing Problem with Time Windows and recharging stations} (\emph{E-FSMFTW})\footnote{Uma possível tradução para o português seria "PRVJT com tamanho de frota elétrica, veículos mistos e estações de recarga".} proposto por \textcite{HIERMANN:16}.
+
+A notação dos autores considera que $C$ é o conjunto de pontos a serem atendidos e $F$ é o conjunto das estações de recarga. Existe um único depósito e um conjunto $V$ de tipos de veículos. Considera-se o conjunto $N = C \cup F'$, onde $F'$ é um conjunto de cópias dos pontos de $F$. Este conjunto é criado para que vários ônibus elétricos possam acessar uma mesma estação de recarga. O depósito é representado pelo vértice de partida $u_0$ e o vértice de chegada $u_{n+1}$. Tem-se ainda $N_0 = N \cup \{u_0\}$, $N_{n+1} = N \cup \{u_{n+1}\}$ e $N_{0,n+1} = N_0 \cup N_{n+1}$. A mesma notação se aplica a $C$ e $F'$. Além disso, existem variáveis $x_{ij}^k \in \{0,1\}$, com $x_{ij}^k = 1$ apenas se um veículo do tipo $k \in V$ se desloca do ponto $i$ ao ponto $j$.
+
+As variáveis $Q^k$ definem a capacidade máxima de veículos do tipo $k$. A cada ponto $i$ estão associadas uma variável de demanda, $p_i$, e uma variável com a carga atual do veículo de tipo $k$ que o atende, $q_i^k$. Da mesma forma, $Y^k$ representa a capacidade energética máxima dos veículos do tipo $k$, com $y_i^k$ representando a energia atual do veículo de tipo $k$ que atende o ponto $i$. O consumo energético por unidade de distância percorrida por veículos do tipo $k$ é $r^k$, e o tempo de recarga por unidade de energia é $g^k$.
+
+Para definir janelas de tempo, os autores usam as variáveis $e_i$, $l_i$, $s_i$, $t_{ij}$, com os mesmos significados atribuídos por \textcite{VIEIRA:13} na \cref{sec:PRVJT genérico}, e $\tau_i$, que representa o momento em que o veículo começa a atender o ponto $i$. Consideram-se ainda a variável $d_{ij}$, que expressa a distância do ponto $i$ ao ponto $j$, o custo de aquisição de veículos do tipo $k$, representado por $f^k$, e o custo de deslocar um veículo do tipo $k$ do ponto $i$ ao ponto $k$, denotado por $c_{ij}^k$.
+
+Com esta notação, os autores modelam o problema da seguinte maneira:
+
+\begin{footnotesize}
+\begin{align}
+    \min& \sum_{\substack{k \in V\\j \in N}}f^kx_{0j}^k + \sum_{\substack{k \in V\\i \in N_0\\j \in N_{n+1}\\i \neq j}}c_{ij}^kx_{ij}^k\label[expression]{eq:hiermann1}\\
+    \text{s.a }& \sum_{\substack{k \in V\\j \in N_{n+1}\\i \neq j}}x_{ij}^k = 1, & \forall i \in C, \label[constraints]{eq:hiermann2}\\
+    &\sum_{\substack{k \in V\\j \in N_{n+1}\\i \neq j}}x_{ij}^k \leq 1, & \forall i \in F', \label[constraints]{eq:hiermann3}\\
+    &\sum_{\substack{i \in N_{n+1}\\ i \neq j}}x_{ji}^k - \sum_{\substack{i \in N_0\\ i \neq j}}x_{ij}^k = 0, & \forall j \in N, k \in V, \label[constraints]{eq:hiermann4}\\
+    &e_j \leq \tau_j \leq l_j, & \forall j \in N_{0,n+1}, \label[constraints]{eq:hiermann5}\\
+    &\tau_i + (t_{ij} + s_i)x_{ij}^k - l_0(1 - x_{ij}^k) \leq \tau_j, & \forall k \in V, i \in C_0, j \in N_{n+1}, i \neq j, \label[constraints]{eq:hiermann6}\\
+    &\tau_i + t_{ij}x_{ij}^k + g^k(Y^k - y_i^k) - (l_0 + g^kY^k)(1 - x_{ij}^k) \leq \tau_j, & \forall k \in V, i \in F', j \in N_{n+1}, i \neq j, \label[constraints]{eq:hiermann7}\\
+    &q_j^k \leq q_i^k - p_ix_{ij}^k + Q^k(1 - x_{ij}^k), & \forall k \in V, i \in N_0, j \in N_{n+1}, i \neq j, \label[constraints]{eq:hiermann8}\\
+    &0 \leq q_j^k \leq Q^k, & \forall k \in V, j \in N_{0, n+1}, \label[constraints]{eq:hiermann9}\\
+    &0 \leq y_j^k \leq y_i^k - (r^kd_{ij})x_{ij}^k + Y^k(1 - x_{ij}^k), & \forall k \in V, i \in C, j \in N_{n+1}, i \neq j, \label[constraints]{eq:hiermann10}\\
+    &0 \leq y_j^k \leq Y^k - (r^kd_{ij})x_{ij}^k, & \forall k \in V, i \in F_0', j \in N_{n+1}, i \neq j, \label[constraints]{eq:hiermann11}\\
+    &y_0^k = Y^k, & \forall k \in V, \label[constraints]{eq:hiermann12}\\
+    &x_{ij}^k \in \{0,1\}, & \forall i \in N_0, j \in N_{n+1}, i \neq j, k \in V. \label[constraints]{eq:hiermann13}
+\end{align}
+\end{footnotesize}
+
+A \cref{eq:hiermann1} estabelece um problema biobjetivo. O primeiro objetivo é minimizar os gastos de aquisição dos veículos que sairão do depósito. O segundo objetivo é minimizar o custo total associado aos deslocamentos de cada tipo de veículo. As \cref{eq:hiermann2} forçam que apenas um veículo passe por cada ponto do problema. As \cref{eq:hiermann3} permitem que os veículos elétricos façam (ou não) recarga nas estações. As \cref{eq:hiermann4} asseguram que todos os veículos entrem e saiam de cada vértice, salvo o caso especial do depósito, que é representado por dois vértices.
+
+As \cref{eq:hiermann5,eq:hiermann6} são análogas às \cref{eq:prvjt7,eq:linearização}, com $l_0$ correspondendo a $M$. As \cref{eq:hiermann7} garantem que os veículos não gastem mais tempo recarregando suas baterias ao máximo do que o necessário para começar a atender o próximo ponto. A constante $l_0 \to \infty$ tenta garantir que esta família de restrições não afete veículos que não se deslocarem de uma estação de recarga $i$ a um ponto de atendimento $j$. Como as unidades de energia usadas podem variar, é possível que $l_0 < g^k(Y^k - y_i^k)$. Para evitar que isso quebre o modelo, soma-se $g^kY^k$ a $l_0$, pois $l_0 + g^kY^k > g^k(Y^k - y_i^k)$.
+
+As \cref{eq:hiermann8} garantem que as cargas dos veículos sejam atualizadas ao longo dos seus trajetos, enquanto as \cref{eq:hiermann9} asseguram que os veículos não façam viagens cuja demanda total exceda suas capacidades. As \cref{eq:hiermann10,eq:hiermann11} funcionam analogamente, atualizando as energias dos veículos e garantindo que não seja utilizada mais energia do que a bateria do respectivo veículo permite. Por fim, as \cref{eq:hiermann12} asseguram que todos os veículos comecem a operar com o máximo de energia, e as \cref{eq:hiermann13} estabelecem que as variáveis de decisão dos deslocamentos são binárias.
+
+Este modelo pode ser expandido para considerar recargas parciais. Isso é preferível, pois o ideal para baterias de lítio é que sua carga seja mantida entre 65 e 75\% do valor máximo. Além disso, a não-linearidade de recarga das baterias pode ser contabilizada para garantir uso mais preciso das baterias e do tempo. Formulações mais aprofundadas, como as de \textcite{CATALDO:22,ZHANG:21,HELLMARK:22,ZUO:19}, levam em conta tais fatores.
+
+\subsection{Comparação de modelos}
+Os três modelos apresentados nesta seção (genérico \cite{VIEIRA:13}, escolar \cite{FÜGENSCHUH:04}, frota mista \cite{HIERMANN:16}) demonstram a grande variabilidade das formulações de PRVJTs, advindas das considerações feitas em diferentes contextos. A seguir, estão listadas algumas diferenças e similaridades notáveis.
+
+\subsubsection*{Função objetivo}
+O modelo \cite{VIEIRA:13} possui apenas um objetivo de minimização, enquanto \cite{FÜGENSCHUH:04,HIERMANN:16} possuem dois. Parece ser uma tendência dos modelos mais complexos serem pelo menos biobjetivos, dada a profundidade das suas considerações acerca dos veículos utilizados. Outros exemplos desta tendência incluem \cite{KESKIN:18,CATALDO:22,FROGER:17,ZUO:19,ZHANG:21}.
+
+\subsubsection*{Variáveis de decisão}
+O modelo \cite{FÜGENSCHUH:04} se distingue dos demais por considerar rotas já planejadas. Assim, este modelo não se utiliza da ideia de matrizes de adjacência. O modelo \cite{VIEIRA:13} considera várias matrizes de adjacência, uma para cada veículo da frota, ao passo que \cite{HIERMANN:16} considera que veículos distintos de um mesmo tipo compartilham da mesma matriz de adjacência, de modo similar à modelagem em \cite{ACHUTHAN:96}. Tendo em vista as considerações computacionais realizadas na \cref{sec:considerações computacionais}, esta última abordagem é preferível, pois economiza variáveis inteiras.
+
+\subsubsection*{Janelas de tempo}
+Em \cite{VIEIRA:13,HIERMANN:16}, as janelas de tempo são pré-definidas. Em \cite{FÜGENSCHUH:04}, um dos desafios é definir quais são os horários ótimos para as janelas de tempo. Isso se deve ao fato de \cite{FÜGENSCHUH:04} abordar um problema de planejamento urbano, ao passo que \cite{VIEIRA:13,HIERMANN:16} são modelos pensados para entregas, cujos horários são controlados por fatores externos.
+
+\subsubsection*{Garantia da factibilidade}
+Em \cite{VIEIRA:13}, a factibilidade do modelo é garantida por restrições sobre todos os subconjuntos de pontos do problema, de maneira similar à formulação DFJ do PCV. Em \cite{FÜGENSCHUH:04}, ela é garantida pelo ajuste mútuo das janelas de tempo. Já \cite{HIERMANN:16} assegura a factibilidade do modelo por meio de janelas de tempo, além de produzir cópias das estações de recarga do modelo para garantir que vários veículos possam passar pelo mesmo vértice. Como \cite{FÜGENSCHUH:04} trabalha com rotas já conhecidas, o modelo evita este aumento de complexidade computacional.

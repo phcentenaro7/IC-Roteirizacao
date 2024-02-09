@@ -1,0 +1,19 @@
+GLPK Simplex Optimizer 5.0
+150 rows, 2500 columns, 5050 non-zeros
+      0: obj =   0.000000000e+00 inf =   1.000e+02 (100)
+     75: obj =   5.979508390e+04 inf =   0.000e+00 (0)
+*   346: obj =   8.749117053e+03 inf =   0.000e+00 (0) 1
+OPTIMAL LP SOLUTION FOUND
+GLPK Integer Optimizer 5.0
+150 rows, 2500 columns, 5050 non-zeros
+2500 integer variables, all of which are binary
+Integer optimization begins...
+Long-step dual simplex will be used
++   346: mip =     not found yet >=              -inf        (1; 0)
++   547: >>>>>   1.208656733e+04 >=   1.123091846e+04   7.1% (21; 0)
++   709: >>>>>   1.191248129e+04 >=   1.126369299e+04   5.4% (51; 2)
++   752: >>>>>   1.166641700e+04 >=   1.127257985e+04   3.4% (58; 7)
++   871: >>>>>   1.148879733e+04 >=   1.129144839e+04   1.7% (53; 42)
++  1573: >>>>>   1.146893622e+04 >=   1.139109044e+04   0.7% (67; 116)
++  1932: mip =   1.146893622e+04 >=     tree is empty   0.0% (0; 303)
+INTEGER OPTIMAL SOLUTION FOUND

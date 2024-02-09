@@ -11,21 +11,19 @@ n = 50
 P = rand(-1000:10:1000, n, 2)
 C = createSymmetricalCostMatrix(P[:, 1], P[:, 2])
 model = Model(Gurobi.Optimizer)
-createTSPModel!(model, C)
-set_optimizer(model, Gurobi.Optimizer)
+createTSPModel!(model, :DFJ, C)
 set_attribute(model, MOI.TimeLimitSec(), 600)
 optimize!(model)
-graphTSP(model, colorant"red", P[:, 1], P[:, 2], linetype = "straight")
+graphTSP(model, colorant"green", P[:, 1], P[:, 2], linetype = "straight")
 
-##CVRP
+#=##CVRP
 n = 15
 P = rand(-1000:1000, n, 2)
 C = createSymmetricalCostMatrix(P[:, 1], P[:, 2])
 model = Model(Gurobi.Optimizer)
-createCVRPModel!(model, C, 3, ceil(n/3), vcat(0, ones(n - 1)))
-set_optimizer(model, Gurobi.Optimizer)
+W = 10
+Q = vcat([0], ones(14))
+createCVRPModel!(model, W, C, Q)
 set_attribute(model, MOI.TimeLimitSec(), 500)
-set_attribute(model, "LazyConstraints", 1)
-set_attribute(model, "Threads", 1)
 optimize!(model)
-graphVRP(model, [colorant"red", colorant"blue", colorant"green", colorant"pink", colorant"brown"], P[:, 1], P[:, 2], linetype = "straight")
+#graphVRP(model, [colorant"red", colorant"blue", colorant"green", colorant"pink", colorant"brown"], P[:, 1], P[:, 2], linetype = "straight")=#

@@ -1,0 +1,21 @@
+using Combinatorics
+
+function createVRPTW(model, C, Q, cardK, dem, serv, entries, leaves)
+    n = size(C, 1)
+    V = collect(1:n)
+    Vp = collect(2:n)
+    K = collect(1:cardK)
+    v(S) = sum(dem[i]/Q for i in S)
+    subsets = filter(x -> length(x) >= 2 && length(x) <= length(V) - 1, collect(combinations(V)))
+    @variable(model, X[1:n,1:n,1:cardK], Bin)
+    @variable(model, b[1:n] >= 0)
+    @objective(model, Min, sum(C[i,j].*X[i,j,k] for k in 1:cardK))
+    @constraint(model, sum(X[0,j,k] for j in Vp, k in K) <= cardK)
+    @constraint(model, [k in K], sum(X[0,j,k] for j in Vp) - sum(X[j,0,k] for j in Vp) <= 1)
+    @constraint(model, [i in Vp], sum(X[i,j,k] for k in K, j in V) == 1)
+    @constraint(model, [k in K, i in Vp], sum(X[i,j,k] for j in V) - sum(X[j,i,k] for j in V) == 0)
+    @constraint(model, [S in subsets], sum(X[i,j,k] for i in S, j in S, k in K) <= length(S) - v(S))
+    @constraint(model, [i in V, j in V, k in K], b[i] + serv[i] + C[i,j] - Inf*(1 - X[i,j,k]) <= b[j])
+    @constraint(model, [i in V], b[i] >= entries[i])
+    @constraint(model, [i in V], b[i] <= leaves[i])
+end

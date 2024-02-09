@@ -1,0 +1,10 @@
+function createGGTSP(model, C)
+    n = size(C, 1)
+    @variable(model, X[1:n, 1:n], Bin)
+    @variable(model, Z[1:n, 1:n] >= 0)
+    @objective(model, Min, sum(C .* X) / 2)
+    @constraint(model, [i in 1:n], sum(X[i, 1:n]) == 1)
+    @constraint(model, [j in 1:n], sum(X[1:n, j]) == 1)
+    @constraint(model, [i in 2:n], sum(Z[i, jz] for jz in 1:n) - sum(Z[jnz, i] for jnz in 2:n) == 1)
+    @constraint(model, [i in 2:n, j in 1:n], Z[i, j] <= (n - 1)*X[i, j])
+end
