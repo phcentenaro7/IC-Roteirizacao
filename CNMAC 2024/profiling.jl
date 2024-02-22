@@ -7,7 +7,7 @@ using BenchmarkTools
 using Plots
 using Printf
 using LaTeXStrings
-include("../tsp.jl")
+include("tsp.jl")
 
 function testProblem(filename, optimizers, formulations, time_limit)
     solve_times = Float64[]
